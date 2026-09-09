@@ -26,4 +26,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
         """)
     Optional<Reservation> findWithBookAndBorrowerById(@Param("id") Long id);
 
+    long countByBookAndStatus(Book book, ReservationStatus status);
+
+    boolean existsByBookAndBorrowerAndStatus(Book book, AppUser borrower, ReservationStatus status);
+
 }

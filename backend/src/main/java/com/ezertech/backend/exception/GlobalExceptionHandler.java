@@ -6,6 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.time.LocalDateTime;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -25,8 +27,11 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(BookNotAvailableException.class)
-    public ResponseEntity<ApiError> handleBookNotAvailable(BookNotAvailableException ex, HttpServletRequest req) {
-        return build(HttpStatus.CONFLICT, "BOOK_NOT_AVAILABLE", ex.getMessage(), req);
+    public ResponseEntity<BookNotAvailableError> handleBookNotAvailable(BookNotAvailableException ex, HttpServletRequest req) {
+        BookNotAvailableError body = new BookNotAvailableError(
+                LocalDateTime.now(), HttpStatus.CONFLICT.value(), "BOOK_NOT_AVAILABLE",
+                ex.getMessage(), req.getRequestURI(), ex.getReservationsAhead());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
     }
 
     @ExceptionHandler(UserBlockedException.class)
@@ -37,6 +42,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(LoanAlreadyReturnedException.class)
     public ResponseEntity<ApiError> handleAlreadyReturned(LoanAlreadyReturnedException ex, HttpServletRequest req) {
         return build(HttpStatus.CONFLICT, "LOAN_ALREADY_RETURNED", ex.getMessage(), req);
+    }
+
+    @ExceptionHandler(DuplicateReservationException.class)
+    public ResponseEntity<ApiError> handleDuplicateReservation(DuplicateReservationException ex, HttpServletRequest req) {
+        return build(HttpStatus.CONFLICT, "DUPLICATE_RESERVATION", ex.getMessage(), req);
     }
 
     private ResponseEntity<ApiError> build(HttpStatus status, String code, String message, HttpServletRequest req) {

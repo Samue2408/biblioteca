@@ -56,8 +56,9 @@ public class LoanService {
                 .orElseThrow(() -> new ResourceNotFoundException("Libro no encontrado"));
 
         if (book.getStatus() != BookStatus.DISPONIBLE) {
+            long ahead = reservationRepository.countByBookAndStatus(book, ReservationStatus.PENDIENTE);
             throw new BookNotAvailableException(
-                    "El libro '" + book.getTitle() + "' no está disponible");
+                    "El libro '" + book.getTitle() + "' no está disponible", (int) ahead);
         }
 
         LocalDate today = LocalDate.now();

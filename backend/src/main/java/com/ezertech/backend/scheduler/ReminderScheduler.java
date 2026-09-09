@@ -5,11 +5,13 @@ import com.ezertech.backend.repository.LoanRepository;
 import com.ezertech.backend.service.NotificationService;
 import jakarta.transaction.Transactional;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Component
 public class ReminderScheduler {
     private final LoanRepository loanRepository;
     private final NotificationService notificationService;
