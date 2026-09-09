@@ -5,12 +5,15 @@ import com.ezertech.backend.dto.book.BookLookupResponse;
 import com.ezertech.backend.dto.book.BookResponse;
 import com.ezertech.backend.dto.book.CreateBookRequest;
 import com.ezertech.backend.entity.Book;
+import com.ezertech.backend.entity.BookStatus;
 import com.ezertech.backend.exception.ResourceNotFoundException;
 import com.ezertech.backend.service.BookService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/books")
@@ -27,6 +30,30 @@ public class BookController {
     public ResponseEntity<BookResponse> create(@Valid @RequestBody CreateBookRequest request) {
         Book book = bookService.createBook(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(toResponse(book));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<BookResponse>> findAll(
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String author,
+            @RequestParam(required = false) BookStatus status) {
+        List<BookResponse> books = bookService.findBooks(title, author, status)
+                .stream()
+                .map(this::toResponse)
+                .toList();
+        return ResponseEntity.ok(books);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        bookService.deleteBook(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("{id}/restore")
+    public ResponseEntity<Void> restore(@PathVariable Long id) {
+        bookService.restoreBook(id);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/lookup/{isbn}")

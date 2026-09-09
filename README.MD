@@ -21,3 +21,5 @@ Query("""
 esto no se puede expresar como derived query method (findByX...) porque compara dos columnas de la misma entidad entre sí (returnDate > dueDate); Spring Data no soporta eso por nombre, por eso el @Query con JPQL.
 
 los atrasos se calculan en el momento contando devoluciones tardías del usuario en los últimos 90 días (returnDate > dueDate y returnDate >= hoy - 90 días). Esto respeta literalmente la regla del enunciado y evita que el contador se desincronice del historial real. Como consecuencia, si un ADMIN desbloquea la cuenta antes de tiempo pero los 3 atrasos siguen dentro de la ventana de 90 días, el siguiente atraso vuelve a bloquear inmediatamente — es el comportamiento esperado, no un bug.
+
+el @Cacheable: cachea tanto el resultado positivo como el Optional.empty() (ISBN válido pero sin datos en Open Library) — evita pegarle a la API de nuevo por el mismo ISBN. Si el método lanza ExternalBookLookupException, Spring no cachea eso — es lo correcto, para que la próxima consulta reintente en vez de quedar "cacheado el fallo" para siempre.

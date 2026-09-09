@@ -5,13 +5,13 @@ import com.ezertech.backend.client.openlibrary.OpenLibraryClient;
 import com.ezertech.backend.dto.book.CreateBookRequest;
 import com.ezertech.backend.entity.Book;
 import com.ezertech.backend.entity.BookStatus;
-import com.ezertech.backend.exception.DuplicateIsbnException;
-import com.ezertech.backend.exception.ExternalBookLookupException;
-import com.ezertech.backend.exception.MissingBookDataException;
+import com.ezertech.backend.exception.*;
 import com.ezertech.backend.repository.BookRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+import org.springframework.data.jpa.domain.Specification;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -70,7 +70,52 @@ public class BookService {
         return bookRepository.save(book);
     }
 
-    // Nunca deja que un fallo de Open Library reviente el registro del libro.
+    public List<Book> findBooks(String title, String author, BookStatus status) {
+        Specification<Book> specification = Specification.unrestricted();
+
+        if (!isBlank(title)) {
+            specification = specification.and((root, query, builder) ->
+                    builder.like(builder.lower(root.get("title")), containsIgnoreCase(title)));
+        }
+        if (!isBlank(author)) {
+            specification = specification.and((root, query, builder) ->
+                    builder.like(builder.lower(root.get("author")), containsIgnoreCase(author)));
+        }
+        if (status != null) {
+            specification = specification.and((root, query, builder) ->
+                    builder.equal(root.get("status"), status));
+        }
+
+        return bookRepository.findAll(specification);
+    }
+
+    @Transactional
+    public void deleteBook(Long id) {
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new com.ezertech.backend.exception.ResourceNotFoundException("Libro no encontrado"));
+
+        if (book.getStatus() != BookStatus.DISPONIBLE) {
+            throw new BookNotDeletableException("Solo se pueden eliminar libros con status DISPONIBLE");
+        }
+
+        book.setStatus(BookStatus.ELIMINADO);
+        bookRepository.save(book);
+    }
+
+    @Transactional
+    public void restoreBook(Long id) {
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Libro no encontrado"));
+
+        if (book.getStatus() != BookStatus.ELIMINADO) {
+            throw new BookNotRestorableException("El libro no está eliminado y no puede restaurarse");
+        }
+
+        book.setStatus(BookStatus.DISPONIBLE);
+        bookRepository.save(book);
+    }
+
+    // Para que un fallo de Open Library no dañe el registro del libro.
     private Optional<OpenLibraryBookData> safeLookup(String isbn) {
         try {
             return openLibraryClient.lookupByIsbn(isbn);
@@ -94,5 +139,9 @@ public class BookService {
 
     private boolean isBlank(String value) {
         return value == null || value.isBlank();
+    }
+
+    private String containsIgnoreCase(String value) {
+        return "%" + value.trim().toLowerCase() + "%";
     }
 }

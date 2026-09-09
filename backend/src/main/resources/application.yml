@@ -36,7 +36,7 @@ spring:
 
 app:
   jwt:
-    secret: ${JWT_SECRET:cambia-este-secreto-en-produccion-minimo-32-bytes}
+    secret: ${JWT_SECRET:llave-secreta-de-minimo-32-bytes-develop}
     expiration-ms: ${JWT_EXPIRATION_MS:86400000}
   mail:
     from: ${MAIL_FROM:biblioteca@ezertech.local}

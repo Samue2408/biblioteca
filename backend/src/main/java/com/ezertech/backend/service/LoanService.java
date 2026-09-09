@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.List;
 
 @Service
 public class LoanService {
@@ -103,6 +104,10 @@ public class LoanService {
         releaseOrReserveBook(loan.getBook());
 
         return savedLoan;
+    }
+
+    public List<Loan> findLoansByBorrower(AppUser borrower) {
+        return loanRepository.findByBorrowerWithBookAndBorrower(borrower);
     }
 
     private void applyDelayPenalty(AppUser borrower) {

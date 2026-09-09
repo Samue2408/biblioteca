@@ -49,6 +49,21 @@ public class ReservationService {
         return new ReservationCreationResult(reservation, (int) position);
     }
 
+    @Transactional
+    public void deleteReservation(Long id, AppUser borrower) {
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Reserva no encontrada"));
+
+        if (!reservation.getBorrower().getId().equals(borrower.getId())) {
+            throw new org.springframework.security.access.AccessDeniedException(
+                    "No puedes eliminar una reserva de otro usuario");
+        }
+
+        reservation.setStatus(ReservationStatus.CANCELADO);
+
+        reservationRepository.save(reservation);
+    }
+
     public record ReservationCreationResult(Reservation reservation, int position) {
     }
 }

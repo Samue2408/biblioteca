@@ -64,6 +64,16 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.CONFLICT, "DUPLICATE_ISBN", ex.getMessage(), req);
     }
 
+    @ExceptionHandler(BookNotDeletableException.class)
+    public ResponseEntity<ApiError> handleBookNotDeletable(BookNotDeletableException ex, HttpServletRequest req) {
+        return build(HttpStatus.CONFLICT,"BOOK_NOT_DELETABLE", ex.getMessage(), req);
+    }
+
+    @ExceptionHandler(BookNotRestorableException.class)
+    public ResponseEntity<ApiError> handleBookNotRestorable(BookNotRestorableException ex,HttpServletRequest req) {
+        return build(HttpStatus.CONFLICT,"BOOK_NOT_RESTORABLE",ex.getMessage(),req);
+    }
+
     private ResponseEntity<ApiError> build(HttpStatus status, String code, String message, HttpServletRequest req) {
         ApiError body = ApiError.of(status.value(), code, message, req.getRequestURI());
         return ResponseEntity.status(status).body(body);

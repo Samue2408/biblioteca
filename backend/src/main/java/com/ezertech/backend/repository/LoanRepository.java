@@ -12,7 +12,18 @@ import java.util.Optional;
 
 public interface LoanRepository extends JpaRepository<Loan, Long> {
 
-    List<Loan> findByBorrower(AppUser borrower);
+    @Query("""
+        SELECT l FROM Loan l
+        JOIN FETCH l.book
+        JOIN FETCH l.borrower
+        WHERE l.borrower = :borrower
+        ORDER BY l.loanDate DESC, l.id DESC
+        """)
+    List<Loan> findByBorrowerWithBookAndBorrower(@Param("borrower") AppUser borrower);
+
+    long countByReturnDateIsNull();
+
+    long countByReturnDateIsNullAndDueDateBefore(LocalDate date);
 
     List<Loan> findByReturnDateIsNullAndReminderSentAtIsNullAndDueDateBetween(
             LocalDate from, LocalDate to);

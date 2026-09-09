@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/loans")
 public class LoanController {
@@ -31,6 +33,15 @@ public class LoanController {
     public ResponseEntity<LoanResponse> returnLoan(@PathVariable Long id) {
         Loan loan = loanService.returnLoan(id);
         return ResponseEntity.ok(toResponse(loan));
+    }
+
+    @GetMapping("/mine")
+    public ResponseEntity<List<LoanResponse>> mine(@AuthenticationPrincipal AppUser borrower) {
+        List<LoanResponse> loans = loanService.findLoansByBorrower(borrower)
+                .stream()
+                .map(this::toResponse)
+                .toList();
+        return ResponseEntity.ok(loans);
     }
 
     private LoanResponse toResponse(Loan loan) {
