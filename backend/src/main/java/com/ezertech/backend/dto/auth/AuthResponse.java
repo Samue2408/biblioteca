@@ -1,4 +1,6 @@
 package com.ezertech.backend.dto.auth;
 
-public record AuthResponse(String token) {
+import com.ezertech.backend.entity.Role;
+
+public record AuthResponse(String token, Role s) {
 }

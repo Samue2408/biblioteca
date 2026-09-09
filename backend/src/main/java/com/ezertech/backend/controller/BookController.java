@@ -74,4 +74,5 @@ public class BookController {
                 book.getId(), book.getTitle(), book.getAuthor(), book.getIsbn(),
                 book.getPublicationYear(), book.getStatus().name(), book.getCoverUrl());
     }
+
 }

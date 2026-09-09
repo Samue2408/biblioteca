@@ -42,7 +42,7 @@ public class AuthService {
 
         appUserRepository.save(user);
 
-        return new AuthResponse(jwtService.generateToken(user.getEmail()));
+        return new AuthResponse(jwtService.generateToken(user.getEmail()), Role.BIBLIOTECARIO);
     }
 
     public AuthResponse login(LoginRequest request) {
@@ -53,6 +53,6 @@ public class AuthService {
             throw new BadCredentialsException("Credenciales inválidas");
         }
 
-        return new AuthResponse(jwtService.generateToken(user.getEmail()));
+        return new AuthResponse(jwtService.generateToken(user.getEmail()), user.getRole());
     }
 }

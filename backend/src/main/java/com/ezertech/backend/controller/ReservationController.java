@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/reservations")
 public class ReservationController {
@@ -41,5 +43,10 @@ public class ReservationController {
 
         reservationService.deleteReservation(id, borrower);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/mine")
+    public ResponseEntity<List<ReservationResponse>> mine(@AuthenticationPrincipal AppUser borrower) {
+        return ResponseEntity.ok(reservationService.getMyReservations(borrower));
     }
 }

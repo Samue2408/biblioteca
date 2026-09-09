@@ -1,5 +1,6 @@
 package com.ezertech.backend.service;
 
+import com.ezertech.backend.dto.reservation.ReservationResponse;
 import com.ezertech.backend.entity.AppUser;
 import com.ezertech.backend.entity.Book;
 import com.ezertech.backend.entity.Reservation;
@@ -12,6 +13,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class ReservationService {
@@ -62,6 +64,32 @@ public class ReservationService {
         reservation.setStatus(ReservationStatus.CANCELADO);
 
         reservationRepository.save(reservation);
+    }
+
+    public List<ReservationResponse> getMyReservations(AppUser borrower) {
+        List<Reservation> reservations = reservationRepository
+                .findWithBookByBorrowerOrderByRequestDateDesc(borrower);
+
+        return reservations.stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
+    private ReservationResponse toResponse(Reservation reservation) {
+        int position = 0;
+
+        if (reservation.getStatus() == ReservationStatus.PENDIENTE) {
+            long ahead = reservationRepository.countByBookAndStatusAndRequestDateBefore(
+                    reservation.getBook(), ReservationStatus.PENDIENTE, reservation.getRequestDate());
+            position = (int) ahead + 1;
+        }
+
+        return new ReservationResponse(
+                reservation.getId(),
+                reservation.getBook().getTitle(),
+                position,
+                reservation.getStatus().name()
+        );
     }
 
     public record ReservationCreationResult(Reservation reservation, int position) {
