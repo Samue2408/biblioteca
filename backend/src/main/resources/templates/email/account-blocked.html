@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Cuenta bloqueada</title></head>
+<body>
+<p>Hola <span th:text="${name}">nombre</span>,</p>
+<p>Tu cuenta ha sido bloqueada temporalmente para pedir nuevos préstamos,
+    debido a 3 devoluciones tardías en los últimos 90 días.</p>
+<p>Podrás volver a pedir préstamos a partir de
+    <strong th:text="${blockedUntil}">fecha</strong>.</p>
+</body>
+</html>

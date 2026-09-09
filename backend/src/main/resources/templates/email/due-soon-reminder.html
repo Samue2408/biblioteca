@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Tu préstamo está por vencer</title></head>
+<body>
+<p>Hola <span th:text="${borrowerName}">nombre</span>,</p>
+<p>Te recordamos que el préstamo de <strong th:text="${bookTitle}">título</strong>
+    vence el <span th:text="${dueDate}">fecha</span>.</p>
+<p>Si ya lo terminaste, recuerda devolverlo a tiempo para evitar un atraso en tu cuenta.</p>
+</body>
+</html>

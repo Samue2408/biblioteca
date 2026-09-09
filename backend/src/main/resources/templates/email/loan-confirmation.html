@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Confirmación de préstamo</title></head>
+<body>
+<p>Hola <span th:text="${borrowerName}">nombre</span>,</p>
+<p>Confirmamos el préstamo de <strong th:text="${bookTitle}">título</strong>.</p>
+<p>Fecha de préstamo: <span th:text="${loanDate}">fecha</span></p>
+<p>Fecha límite de devolución: <span th:text="${dueDate}">fecha límite</span></p>
+</body>
+</html>
