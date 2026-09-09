@@ -49,6 +49,21 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.CONFLICT, "DUPLICATE_RESERVATION", ex.getMessage(), req);
     }
 
+    @ExceptionHandler(ExternalBookLookupException.class)
+    public ResponseEntity<ApiError> handleExternalLookup(ExternalBookLookupException ex, HttpServletRequest req) {
+        return build(HttpStatus.BAD_GATEWAY, "EXTERNAL_LOOKUP_FAILED", ex.getMessage(), req);
+    }
+
+    @ExceptionHandler(MissingBookDataException.class)
+    public ResponseEntity<ApiError> handleMissingBookData(MissingBookDataException ex, HttpServletRequest req) {
+        return build(HttpStatus.BAD_REQUEST, "MISSING_BOOK_DATA", ex.getMessage(), req);
+    }
+
+    @ExceptionHandler(DuplicateIsbnException.class)
+    public ResponseEntity<ApiError> handleDuplicateIsbn(DuplicateIsbnException ex, HttpServletRequest req) {
+        return build(HttpStatus.CONFLICT, "DUPLICATE_ISBN", ex.getMessage(), req);
+    }
+
     private ResponseEntity<ApiError> build(HttpStatus status, String code, String message, HttpServletRequest req) {
         ApiError body = ApiError.of(status.value(), code, message, req.getRequestURI());
         return ResponseEntity.status(status).body(body);
