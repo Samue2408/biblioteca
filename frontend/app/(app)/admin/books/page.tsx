@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { findBooks, lookupBookByIsbn, createBook, deleteBook } from "@/services/books.service";
+import { findBooks, lookupBookByIsbn, createBook, deleteBook, restoreBook } from "@/services/books.service";
 import { BookCard } from "@/components/books/BookCard";
 import type { BookResponse, BookStatus, CreateBookRequest } from "@/types/book";
 import { ApiException } from "@/lib/api/errors";
@@ -110,6 +110,21 @@ export default function AdminBooksPage() {
       }
     }
   }
+
+  async function handleRestore(id: number) {
+    try {
+      await restoreBook(id);
+      await loadBooks();
+    } catch (err) {
+      if (err instanceof ApiException && err.code === "NOT_FOUND") {
+        alert("No se puede restaurar: el libro no se encontró");
+      } else {
+        alert("No se pudo restaurar el libro.");
+      }
+    }
+  }
+
+  
 
   return (
     <div className="flex flex-col gap-8">
@@ -232,12 +247,24 @@ export default function AdminBooksPage() {
       <div className="grid gap-10 lg:grid-cols-4 sm:grid-cols-3 justify-items-center">
         {books.map((book) => (
           <BookCard book={book} key={book.id}>
+
+            {book.status == "ELIMINADO" ?
+            <button
+              onClick={() => handleRestore(book.id)}
+              className="mx-auto rounded-md bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700 hover:bg-emerald-100"
+            >
+              Restaurar
+            </button>
+
+            :
             <button
               onClick={() => handleDelete(book.id)}
-              className="cursor-pointer rounded-md bg-red-50 px-2.5 py-1 text-xs font-medium text-red-700 hover:bg-red-100"
+              className="mx-auto rounded-md bg-red-50 px-2.5 py-1 text-xs font-medium text-red-700 hover:bg-red-100"
             >
               Eliminar
             </button>
+
+            }
           </BookCard>
         ))}
       </div>
