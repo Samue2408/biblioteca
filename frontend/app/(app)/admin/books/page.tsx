@@ -229,7 +229,7 @@ export default function AdminBooksPage() {
         
       </div>
 
-      <div className="flex flex-wrap justify-center gap-8">
+      <div className="grid gap-10 lg:grid-cols-4 sm:grid-cols-3 justify-items-center">
         {books.map((book) => (
           <BookCard book={book} key={book.id}>
             <button
