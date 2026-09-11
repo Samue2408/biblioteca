@@ -11,5 +11,5 @@ export function getBackendOrigin(): string {
   if (fromEnv) {
     return fromEnv.replace(/\/$/, "");
   }
-  return "http://localhost:8080";
+  return "http://backend:8080";
 }
