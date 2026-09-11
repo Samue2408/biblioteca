@@ -37,11 +37,11 @@ public class BookService {
         String title = request.title();
         String author = request.author();
         Integer year = request.publicationYear();
-        String coverUrl = null;
+        String coverUrl = request.coverUrl();
 
-        boolean needsAutofill = isBlank(title) || isBlank(author);
-
-        if (needsAutofill) {
+//        boolean needsAutofill = isBlank(title) || isBlank(author);
+//
+//        if (needsAutofill) {
             Optional<OpenLibraryBookData> data = safeLookup(request.isbn());
 
             if (data.isPresent()) {
@@ -49,9 +49,9 @@ public class BookService {
                 if (isBlank(title)) title = d.title();
                 if (isBlank(author)) author = firstAuthorName(d);
                 if (year == null) year = extractYear(d.publishDate());
-                if (d.cover() != null) coverUrl = d.cover().large();
+                if (isBlank(coverUrl) && d.cover() != null) coverUrl = d.cover().large();
             }
-        }
+//        }
 
         if (isBlank(title) || isBlank(author)) {
             throw new MissingBookDataException(
@@ -84,6 +84,9 @@ public class BookService {
         if (status != null) {
             specification = specification.and((root, query, builder) ->
                     builder.equal(root.get("status"), status));
+        } else {
+            specification = specification.and((root, query, builder) ->
+                    builder.notEqual(root.get("status"), BookStatus.ELIMINADO));
         }
 
         return bookRepository.findAll(specification);

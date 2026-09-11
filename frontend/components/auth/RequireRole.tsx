@@ -12,19 +12,20 @@ export function RequireRole({
   role: Role;
   children: ReactNode;
 }) {
+  const { user, isReady, isAuthenticated } = useAuth();
+  console.log(user?.role)
   const router = useRouter();
-  const { isReady, user } = useAuth();
-  const allowed = user?.role === role;
 
   useEffect(() => {
-    if (isReady && !allowed) {
-      router.replace("/");
+    if (!isReady) return;
+    if (!isAuthenticated || user?.role !== role) {
+      router.replace("/login");
     }
-  }, [isReady, allowed, router]);
+  }, [isReady, isAuthenticated, user, router]);
 
-  if (!isReady || !allowed) {
-    return <p className="p-4">Cargando...</p>;
+  if (!isReady || user?.role !== role) {
+    return <p>Verificando acceso…</p>;
   }
 
-  return children;
+  return <>{children}</>;
 }

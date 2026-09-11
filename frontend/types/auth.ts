@@ -13,5 +13,5 @@ export type RegisterRequest = {
 
 export type AuthResponse = {
   token: string;
-  role: "ADMIN" | "BIBLIOTECARIO";
+  role: Role;
 };

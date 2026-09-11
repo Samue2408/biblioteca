@@ -7,6 +7,7 @@ public record AdminStatsResponse(
         long reservedBooks,
         long totalLoans,
         long activeLoans,
-        long overdueLoans
+        long overdueLoans,
+        long blockedUsers
 ) {
 }

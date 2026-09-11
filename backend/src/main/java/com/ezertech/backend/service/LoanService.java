@@ -56,10 +56,42 @@ public class LoanService {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new ResourceNotFoundException("Libro no encontrado"));
 
-        if (book.getStatus() != BookStatus.DISPONIBLE) {
+        if (book.getStatus() == BookStatus.ELIMINADO) {
+            throw new ResourceNotFoundException("Libro no encontrado");
+        }
+
+        if (book.getStatus() == BookStatus.PRESTADO) {
             long ahead = reservationRepository.countByBookAndStatus(book, ReservationStatus.PENDIENTE);
             throw new BookNotAvailableException(
                     "El libro '" + book.getTitle() + "' no está disponible", (int) ahead);
+        }
+
+        if (book.getStatus() == BookStatus.RESERVADO) {
+
+            Reservation firstReservation = reservationRepository
+                    .findFirstByBookAndStatusOrderByRequestDateAsc(
+                            book,
+                            ReservationStatus.NOTIFICADO
+                    )
+                    .orElseThrow(() ->
+                            new BookNotAvailableException(
+                                    "El libro está reservado",
+                                    0
+                            ));
+
+            if (!firstReservation.getBorrower().getId().equals(borrower.getId())) {
+                long ahead = reservationRepository
+                        .countByBookAndStatus(book, ReservationStatus.PENDIENTE);
+
+                throw new BookNotAvailableException(
+                        "El libro está reservado para otro usuario",
+                        (int) ahead);
+            }
+
+
+            // Esta reserva fue atendida.
+            firstReservation.setStatus(ReservationStatus.CUMPLIDO);
+            reservationRepository.save(firstReservation);
         }
 
         LocalDate today = LocalDate.now();

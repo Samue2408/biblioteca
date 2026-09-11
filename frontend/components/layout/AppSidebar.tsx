@@ -14,40 +14,47 @@ export function AppSidebar() {
   const { user, logout } = useAuth();
 
   return (
-    <aside className="flex w-full flex-col gap-6 border-b border-zinc-200 p-4 md:w-56 md:border-b-0 md:border-r">
-      <p className="font-semibold">Biblioteca</p>
-      <nav className="flex flex-row gap-3 md:flex-col">
+    <aside className="flex w-full flex-col gap-8 border-b border-zinc-200 p-5 md:w-56 md:border-b-0 md:border-r">
+      <p className="text-sm font-semibold tracking-tight text-zinc-900">Biblioteca</p>
+
+      <nav className="flex flex-row gap-1 md:flex-col">
         {links.map((link) => {
           const active = pathname === link.href;
           return (
             <Link
               key={link.href}
               href={link.href}
-              className={active ? "font-medium underline" : "underline-offset-2 hover:underline"}
+              className={`rounded-md px-2.5 py-1.5 text-sm transition-colors ${
+                active
+                  ? "bg-zinc-100 font-medium text-zinc-900"
+                  : "text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900"
+              }`}
             >
               {link.label}
             </Link>
           );
         })}
+
         {user?.role === "ADMIN" ? (
           <Link
             href="/admin"
-            className={
+            className={`rounded-md px-2.5 py-1.5 text-sm transition-colors ${
               pathname.startsWith("/admin")
-                ? "font-medium underline"
-                : "underline-offset-2 hover:underline"
-            }
+                ? "bg-zinc-100 font-medium text-zinc-900"
+                : "text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900"
+            }`}
           >
             Administración
           </Link>
         ) : null}
       </nav>
-      <div className="mt-auto flex flex-col gap-2 text-sm">
-        <p className="break-all text-zinc-600">{user?.email}</p>
+
+      <div className="mt-auto flex flex-col gap-3 border-t border-zinc-200 pt-4 text-sm">
+        <p className="truncate text-zinc-500">{user?.email}</p>
         <button
           type="button"
           onClick={logout}
-          className="w-fit rounded border border-zinc-300 px-3 py-1"
+          className="w-fit text-zinc-500 transition-colors hover:text-zinc-900"
         >
           Cerrar sesión
         </button>

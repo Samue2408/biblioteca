@@ -19,6 +19,7 @@ export type CreateBookRequest = {
   title?: string;
   author?: string;
   publicationYear?: number | null;
+  coverUrl?: string;
 };
 
 export type BookLookupResponse = {

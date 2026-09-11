@@ -9,7 +9,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { setAccessToken } from "@/lib/api/token";
+import { getAccessToken, setAccessToken } from "@/lib/api/token";
 import { getEmailFromToken } from "@/lib/auth/jwt";
 import { resolveRole } from "@/lib/auth/role";
 import { readStoredToken, writeStoredToken } from "@/lib/auth/storage";
@@ -76,6 +76,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
+    
     async function restoreSession() {
       const email = applyToken(readStoredToken());
       if (!email) {
@@ -83,8 +84,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setIsReady(true);
         return;
       }
-      setUser(await toAuthUser(email));
-      setIsReady(true);
+
+      try {
+        setUser(await toAuthUser(email));
+      } catch {
+        // No se pudo verificar la sesión (backend caído, error inesperado, etc).
+        applyToken(null);
+        setUser(null);
+      } finally {
+        setIsReady(true);
+      }
     }
 
     void restoreSession();
@@ -97,7 +106,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(null);
       return;
     }
-    setUser(await toAuthUser(email));
+    setUser(await toAuthUser(email, response.role));
   }, []);
 
   const register = useCallback(async (payload: RegisterRequest) => {

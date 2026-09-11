@@ -16,3 +16,10 @@ export function register(payload: RegisterRequest): Promise<AuthResponse> {
     auth: false,
   });
 }
+
+export async function getMe(): Promise<AuthResponse> {
+  return apiClient<AuthResponse>("/auth/me", {
+    method: "GET",
+    auth: true
+  });
+}

@@ -11,6 +11,7 @@ import {
 } from "@/services/reservations.service";
 import type { BookFilters, BookResponse, BookStatus } from "@/types/book";
 import type { ReservationResponse } from "@/types/reservation";
+import { BookCard } from "@/components/books/BookCard";
 
 const statusOptions: Array<{ value: BookStatus; label: string }> = [
   { value: "DISPONIBLE", label: "Disponible" },
@@ -18,24 +19,7 @@ const statusOptions: Array<{ value: BookStatus; label: string }> = [
   { value: "RESERVADO", label: "Reservado" },
 ];
 
-const statusLabel: Record<string, string> = {
-  DISPONIBLE: "Disponible",
-  PRESTADO: "Prestado",
-  RESERVADO: "Reservado",
-};
 
-function statusClass(status: string) {
-  switch (status) {
-    case "DISPONIBLE":
-      return "bg-emerald-100 text-emerald-800";
-    case "PRESTADO":
-      return "bg-amber-100 text-amber-800";
-    case "RESERVADO":
-      return "bg-sky-100 text-sky-800";
-    default:
-      return "bg-zinc-100 text-zinc-700";
-  }
-}
 
 export default function CatalogPage() {
   const [books, setBooks] = useState<BookResponse[]>([]);
@@ -337,41 +321,33 @@ export default function CatalogPage() {
           <p className="mb-4 text-sm text-zinc-600">
             {books.length} {books.length === 1 ? "libro encontrado" : "libros encontrados"}
           </p>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-10 lg:grid-cols-4 sm:grid-cols-3 justify-items-center">
             {books.map((book) => (
-              <article key={book.id} className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <h2 className="text-lg font-semibold text-zinc-900">{book.title}</h2>
-                    <p className="mt-1 text-sm text-zinc-600">{book.author}</p>
-                  </div>
-                  <span className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-medium ${statusClass(book.status)}`}>
-                    {statusLabel[book.status] ?? book.status}
-                  </span>
-                </div>
-                <dl className="mt-5 grid grid-cols-2 gap-x-4 gap-y-3 border-t border-zinc-100 pt-4 text-sm">
-                  <div>
-                    <dt className="text-zinc-500">ISBN</dt>
-                    <dd className="mt-0.5 font-medium text-zinc-800">{book.isbn}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-zinc-500">Publicación</dt>
-                    <dd className="mt-0.5 font-medium text-zinc-800">
-                      {book.publicationYear ?? "Sin dato"}
-                    </dd>
-                  </div>
-                </dl>
-                <div className="mt-5 border-t border-zinc-100 pt-4">
-                  {reservations[book.title] ? (
-                    <div className="flex flex-wrap items-center justify-between gap-3">
+              <BookCard
+                book={book}
+              >
+                {reservations[book.title] ? (
+                    <div className="flex flex-wrap items-center justify-center gap-3">
+                      {reservations[book.title].position == 0 ? 
+                      <button
+                        type="button"
+                        onClick={() => void requestLoan(book)}
+                        disabled={actionBookId === book.id}
+                        className="w-full rounded-lg bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        {actionBookId === book.id ? "Solicitando…" : "Disponible para ti"}
+                      </button>
+                      :
                       <p className="text-sm text-zinc-600">
                         Reserva confirmada · posición {reservations[book.title].position}
                       </p>
+                    
+                    }
                       <button
                         type="button"
                         onClick={() => void cancelBookReservation(book, reservations[book.title])}
                         disabled={actionBookId === book.id}
-                        className="rounded-lg border border-red-300 px-3 py-2 text-sm font-medium text-red-700 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+                        className="rounded-lg px-3 py-2 text-sm font-medium text-red-700 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
                       >
                         {actionBookId === book.id ? "Cancelando…" : "Cancelar reserva"}
                       </button>
@@ -395,8 +371,7 @@ export default function CatalogPage() {
                       {actionBookId === book.id ? "Reservando…" : "Reservar"}
                     </button>
                   )}
-                </div>
-              </article>
+              </BookCard>
             ))}
           </div>
         </section>

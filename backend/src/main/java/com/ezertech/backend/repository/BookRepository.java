@@ -15,4 +15,5 @@ public interface BookRepository extends JpaRepository<Book, Long>, JpaSpecificat
     boolean existsByIsbn(String isbn);
     List<Book> findByStatus(BookStatus status);
     long countByStatus(BookStatus status);
+    List<Book> findByStatusNot(BookStatus status);
 }

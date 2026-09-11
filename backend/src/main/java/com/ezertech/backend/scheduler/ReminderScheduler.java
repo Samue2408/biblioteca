@@ -32,7 +32,5 @@ public class ReminderScheduler {
             notificationService.sendDueSoonReminder(loan);
             loan.setReminderSentAt(LocalDateTime.now());
         }
-        // no hace falta loanRepository.save(): están dentro de la transacción,
-        // Hibernate detecta el cambio y hace el UPDATE solo (dirty checking)
     }
 }

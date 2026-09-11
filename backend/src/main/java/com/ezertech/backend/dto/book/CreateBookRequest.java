@@ -6,6 +6,7 @@ public record CreateBookRequest(
         @NotBlank String isbn,
         String title,
         String author,
-        Integer publicationYear
+        Integer publicationYear,
+        String coverUrl
 ) {
 }
