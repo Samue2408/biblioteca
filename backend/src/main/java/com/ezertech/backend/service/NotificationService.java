@@ -84,6 +84,16 @@ public class NotificationService {
                 "email/book-available", context);
     }
 
+    public void sendOverdueNotice(Loan loan) {
+        Context context = new Context();
+
+        context.setVariable("borrowerName", loan.getBorrower().getName());
+        context.setVariable("bookTitle", loan.getBook().getTitle());
+        context.setVariable("dueDate", loan.getDueDate());
+
+        send(loan.getBorrower().getEmail(), "Tu préstamo está vencido", "email/overdue-notice", context);
+    }
+
     private void send(String to, String subject, String template, Context context) {
         try {
             String html = templateEngine.process(template, context);

@@ -322,8 +322,9 @@ export default function CatalogPage() {
             {books.length} {books.length === 1 ? "libro encontrado" : "libros encontrados"}
           </p>
           <div className="grid gap-10 lg:grid-cols-4 sm:grid-cols-3 justify-items-center">
-            {books.map((book) => (
+            {books.map((book, i) => (
               <BookCard
+                key={i}
                 book={book}
               >
                 {reservations[book.title] ? (

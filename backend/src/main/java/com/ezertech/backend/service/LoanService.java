@@ -142,6 +142,10 @@ public class LoanService {
         return loanRepository.findByBorrowerWithBookAndBorrower(borrower);
     }
 
+    public List<Loan> findAllLoans() {
+        return loanRepository.findAllWithBookAndBorrower();
+    }
+
     private void applyDelayPenalty(AppUser borrower) {
         LocalDate since = LocalDate.now().minusDays(90);
         long lateReturnsInWindow = loanRepository.countLateReturnsSince(borrower, since);

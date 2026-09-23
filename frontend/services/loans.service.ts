@@ -15,3 +15,7 @@ export function returnLoan(id: number): Promise<LoanResponse> {
 export function findMyLoans(): Promise<LoanResponse[]> {
   return apiClient<LoanResponse[]>("/loans/mine");
 }
+
+export function findAllLoans(): Promise<LoanResponse[]> {
+  return apiClient<LoanResponse[]>("/admin/loans");
+}

@@ -17,6 +17,7 @@ public class OpenLibraryClientConfig {
         return RestClient.builder()
                 .baseUrl(properties.baseUrl())
                 .requestFactory(factory)
+                .defaultHeader("User-Agent", "Biblioteca/1.0 (local)")
                 .build();
     }
 }

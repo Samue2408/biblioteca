@@ -76,6 +76,7 @@ export default function AdminPage() {
           <StatCard
             label="Préstamos vencidos"
             value={stats.overdueLoans}
+            href="/admin/loans"
             emphasis={stats.overdueLoans > 0}
           />
           <StatCard

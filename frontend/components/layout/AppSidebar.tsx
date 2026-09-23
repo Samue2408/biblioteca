@@ -14,7 +14,7 @@ export function AppSidebar() {
   const { user, logout } = useAuth();
 
   return (
-    <aside className="flex w-full flex-col gap-8 border-b border-zinc-200 p-5 md:w-56 md:border-b-0 md:border-r">
+    <aside className="flex w-full flex-col gap-8 border-b border-zinc-200 p-5 md:fixed md:inset-y-0 md:left-0 md:z-20 md:w-56 md:overflow-y-auto md:border-b-0 md:border-r md:bg-white">
       <p className="text-sm font-semibold tracking-tight text-zinc-900">Biblioteca</p>
 
       <nav className="flex flex-row gap-1 md:flex-col">

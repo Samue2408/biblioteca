@@ -21,6 +21,7 @@ public class ReminderScheduler {
         this.notificationService = notificationService;
     }
 
+    // @Scheduled(cron = "0 */1 * * * *")
     @Scheduled(cron = "0 0 8 * * *")
     @Transactional
     public void sendDueSoonReminders() {
@@ -31,6 +32,18 @@ public class ReminderScheduler {
         for (Loan loan : dueSoon) {
             notificationService.sendDueSoonReminder(loan);
             loan.setReminderSentAt(LocalDateTime.now());
+        }
+    }
+
+    @Scheduled(cron = "0 0 9 * * *")
+    @Transactional
+    public void sendOverdueNotices() {
+        List<Loan> overdue = loanRepository
+                .findByReturnDateIsNullAndDueDateBeforeAndOverdueNoticeSentAtIsNull(LocalDate.now());
+
+        for (Loan loan : overdue) {
+            notificationService.sendOverdueNotice(loan);
+            loan.setOverdueNoticeSentAt(LocalDateTime.now());
         }
     }
 }

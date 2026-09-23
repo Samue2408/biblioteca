@@ -34,6 +34,14 @@ public interface LoanRepository extends JpaRepository<Loan, Long> {
         SELECT l FROM Loan l
         JOIN FETCH l.book
         JOIN FETCH l.borrower
+        ORDER BY l.loanDate DESC, l.id DESC
+        """)
+    List<Loan> findAllWithBookAndBorrower();
+
+    @Query("""
+        SELECT l FROM Loan l
+        JOIN FETCH l.book
+        JOIN FETCH l.borrower
         WHERE l.id = :id
         """)
     Optional<Loan> findWithBookAndBorrowerById(@Param("id") Long id);
